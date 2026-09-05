@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🎂 Important Notification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: linear-gradient(135deg, #2b1a3e 0%, #3e1e5e 50%, #60123f 100%);
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ---- Ambient sparkle particles ---- */
+.sparkle-bg {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+  overflow: hidden;
+}
+.sparkle {
+  position: absolute;
+  width: 3px; height: 3px;
+  background: rgba(255, 198, 41, 0.5);
+  border-radius: 50%;
+  animation: twinkle linear infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+/* ---- Screens ---- */
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 440px;
+  z-index: 1;
+}
+.screen.active {
+  display: flex;
+  animation: screenIn 0.5s cubic-bezier(.4,0,.2,1);
+}
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(30px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---- Logo ---- */
+.bumble-logo {
+  width: 80px; height: 80px;
+  background: linear-gradient(135deg, #FFC629, #FF9500);
+  border-radius: 22px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 42px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 32px rgba(255, 198, 41, 0.3);
+  animation: logoPulse 2s ease infinite;
+}
+@keyframes logoPulse {
+  0%, 100% { box-shadow: 0 8px 32px rgba(255,198,41,0.3); }
+  50% { box-shadow: 0 8px 48px rgba(255,198,41,0.5); }
+}
+
+/* ---- Notification Card ---- */
+.notification-badge {
+  background: rgba(255, 198, 41, 0.08);
+  border: 1px solid rgba(255, 198, 41, 0.2);
+  border-radius: 20px;
+  padding: 1.8rem;
+  margin: 1rem 0;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.notification-badge h2 {
+  color: #FFC629;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 1rem;
+}
+.notification-badge p {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.85);
+}
+.highlight {
+  color: #FFC629;
+  font-weight: 800;
+}
+
+/* ---- Buttons ---- */
+.btn {
+  padding: 15px 44px;
+  border: none;
+  border-radius: 50px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(.4,0,.2,1);
+  margin-top: 1.5rem;
+  -webkit-appearance: none;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #FFC629, #FF9500);
+  color: #2b1a3e;
+}
+@media (hover: hover) {
+  .btn-primary:hover {
+    transform: scale(1.06);
+    box-shadow: 0 6px 28px rgba(255, 198, 41, 0.45);
+  }
+}
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+/* ---- Quiz Card ---- */
+.quiz-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 24px;
+  padding: 2rem 1.5rem;
+  width: 100%;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.question-number {
+  font-size: 0.8rem;
+  color: #FFC629;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 0.6rem;
+}
+.question-text {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+.option-btn {
+  display: block;
+  width: 100%;
+  padding: 15px 18px;
+  margin-bottom: 10px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 14px;
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: left;
+  -webkit-appearance: none;
+}
+@media (hover: hover) {
+  .option-btn:hover {
+    background: rgba(255, 198, 41, 0.18);
+    border-color: rgba(255, 198, 41, 0.5);
+    transform: translateX(4px);
+  }
+}
+.option-btn:active {
+  background: rgba(255, 198, 41, 0.18);
+  border-color: rgba(255, 198, 41, 0.5);
+}
+.option-btn.selected {
+  background: rgba(255,198,41,0.25);
+  border-color: #FFC629;
+  pointer-events: none;
+}
+
+/* ---- Response Toast ---- */
+.response-toast {
+  position: fixed;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20,10,35,0.92);
+  border-radius: 18px;
+  padding: 1.2rem 1.8rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  z-index: 100;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,198,41,0.25);
+  max-width: 88%;
+  text-align: center;
+  animation: toastIn 0.35s cubic-bezier(.4,0,.2,1);
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-18px) scale(0.95); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+.toast-exit {
+  animation: toastOut 0.35s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes toastOut {
+  to { opacity: 0; transform: translateX(-50%) translateY(-12px) scale(0.95); }
+}
+
+/* ---- Final Question Buttons ---- */
+.final-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+.yes-btn {
+  padding: 15px 44px;
+  background: linear-gradient(135deg, #FFC629, #FF9500);
+  border: none;
+  border-radius: 50px;
+  color: #2b1a3e;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  -webkit-appearance: none;
+}
+@media (hover: hover) {
+  .yes-btn:hover {
+    transform: scale(1.06);
+    box-shadow: 0 6px 28px rgba(255,198,41,0.45);
+  }
+}
+.yes-btn:active {
+  transform: scale(0.97);
+}
+.no-btn {
+  padding: 15px 44px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50px;
+  color: rgba(255,255,255,0.7);
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  -webkit-appearance: none;
+}
+
+/* ---- GLITCH EFFECT ---- */
+.glitch-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 200;
+  background: #14001a;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+.glitch-overlay.active {
+  display: flex;
+  animation: glitchIn 0.15s steps(3);
+}
+@keyframes glitchIn {
+  0% { transform: translate(-3px, 2px) skewX(-2deg); filter: hue-rotate(90deg); }
+  33% { transform: translate(3px, -1px) skewX(1deg); filter: hue-rotate(180deg); }
+  66% { transform: translate(-2px, 1px) skewX(-1deg); filter: hue-rotate(270deg); }
+  100% { transform: translate(0) skewX(0); filter: hue-rotate(0deg); }
+}
+.glitch-overlay .error-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: errorPulse 0.5s ease;
+}
+@keyframes errorPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+.glitch-overlay .error-code {
+  font-size: 0.8rem;
+  color: #FF4B6E;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 0.8rem;
+  font-weight: 700;
+}
+.glitch-overlay .error-msg {
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.6;
+  max-width: 340px;
+  margin-bottom: 1.5rem;
+}
+.glitch-overlay .error-sub {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.4);
+  font-style: italic;
+}
+.glitch-scanlines {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 201;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.15) 0px,
+    rgba(0,0,0,0.15) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  display: none;
+}
+.glitch-scanlines.active { display: block; }
+
+/* ---- Loading Screen ---- */
+.loading-item {
+  width: 100%;
+  margin-bottom: 1.4rem;
+  text-align: left;
+}
+.loading-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: rgba(255,255,255,0.75);
+}
+.loading-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.loading-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FFC629, #FF6B6B);
+  border-radius: 4px;
+  width: 0%;
+  transition: width 1.4s cubic-bezier(.4,0,.2,1);
+}
+.loading-result {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #FFC629;
+  margin-top: 0.3rem;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.loading-result.visible { opacity: 1; }
+
+/* ---- Birthday Card ---- */
+.valentine-card {
+  background: linear-gradient(135deg, rgba(255,75,110,0.15), rgba(255,198,41,0.1));
+  border: 1px solid rgba(255,198,41,0.25);
+  border-radius: 28px;
+  padding: 2.5rem 1.8rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: valentineGlow 2s ease infinite;
+}
+@keyframes valentineGlow {
+  0%, 100% { box-shadow: 0 0 30px rgba(255,198,41,0.15); }
+  50% { box-shadow: 0 0 50px rgba(255,198,41,0.3); }
+}
+.valentine-card .title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 0.4rem;
+}
+.valentine-card .subtitle {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.5);
+  font-style: italic;
+  margin-bottom: 1.8rem;
+}
+.valentine-card .the-question {
+  font-size: 1.7rem;
+  font-weight: 900;
+  line-height: 1.4;
+  margin-bottom: 0.8rem;
+  background: linear-gradient(135deg, #FF6B6B, #FFC629, #FF9500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.valentine-card .tagline {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.55);
+  font-style: italic;
+  margin-bottom: 1.8rem;
+}
+.btn-valentine {
+  padding: 18px 54px;
+  background: linear-gradient(135deg, #FF6B6B, #FFC629);
+  border: none;
+  border-radius: 50px;
+  color: #2b1a3e;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  -webkit-appearance: none;
+  animation: btnPulse 1.8s ease infinite;
+}
+@keyframes btnPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 6px 25px rgba(255,198,41,0.35); }
+  50% { transform: scale(1.04); box-shadow: 0 8px 40px rgba(255,198,41,0.55); }
+}
+.btn-valentine:active { transform: scale(0.97); }
+
+/* ---- Celebration ---- */
+.celebration { text-align: center; }
+.celebration .big-heart {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  animation: heartBeat 1s ease infinite;
+}
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.15); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.1); }
+}
+.celebration h1 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #FF6B6B, #FFC629, #FF9500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.celebration p {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.8;
+}
+.celebration .golden {
+  color: #FFC629;
+  font-weight: 800;
+  -webkit-text-fill-color: #FFC629;
+}
+.meme-img {
+  width: 220px;
+  max-width: 70%;
+  border-radius: 16px;
+  margin-top: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  animation: memeIn 0.6s cubic-bezier(.4,0,.2,1) 1s both;
+  display: none;
+}
+.meme-img.show { display: inline-block; }
+.meme-placeholder {
+  width: 220px;
+  max-width: 70%;
+  aspect-ratio: 1;
+  border-radius: 16px;
+  margin-top: 1.5rem;
+  background: rgba(255,255,255,0.06);
+  border: 2px dashed rgba(255,198,41,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  animation: memeIn 0.6s cubic-bezier(.4,0,.2,1) 1s both;
+}
+@keyframes memeIn {
+  from { opacity: 0; transform: scale(0.8) rotate(-3deg); }
+  to { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* ---- Floating Hearts/Balloons (celebration bg) ---- */
+.hearts-bg {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+  overflow: hidden;
+}
+.floating-heart {
+  position: absolute;
+  animation: floatUp linear infinite;
+  opacity: 0;
+}
+@keyframes floatUp {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  8% { opacity: 0.7; }
+  85% { opacity: 0.7; }
+  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+
+/* ---- Progress Dots ---- */
+.progress-dots {
+  display: flex;
+  gap: 8px;
+  margin-top: 1.8rem;
+}
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transition: all 0.4s ease;
+}
+.dot.active {
+  background: #FFC629;
+  width: 26px;
+  border-radius: 4px;
+}
+.dot.done { background: rgba(255,198,41,0.5); }
+
+/* ---- Utility ---- */
+.big-emoji { font-size: 4rem; margin-bottom: 1rem; }
+.pulse { animation: pulse 1.8s ease infinite; }
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+</style>
+</head>
+<body>
+
+<div class="sparkle-bg" id="sparkleBg"></div>
+<div class="hearts-bg" id="heartsBg"></div>
+
+<!-- Screen 0: Notification -->
+<div class="screen active" id="screen0">
+  <div class="bumble-logo pulse">🎂</div>
+  <div class="notification-badge">
+    <h2>⚠️ Important Notification</h2>
+    <p>
+      2 years ago, Punu swiped right on <span class="highlight">Maxi</span> on Bumble.<br>
+      Today is a much bigger deal: it's <span class="highlight">her birthday</span>.<br>
+      As per policy, a mandatory <span class="highlight">Birthday Audit</span> must be completed before any cake, gifts, or hugs are released.
+    </p>
+  </div>
+  <button class="btn btn-primary" onclick="goTo(1)">Begin Audit →</button>
+</div>
+
+<!-- Screen 1: Question 1 -->
+<div class="screen" id="screen1">
+  <div class="quiz-card">
+    <div class="question-number">Question 1 of 7</div>
+    <div class="question-text">Where did Punu &amp; Maxi have their very first date? 🍝</div>
+    <button class="option-btn" onclick="answer(this, 1, 'Correct! Tiny Tuscan, forever legendary. 🇮🇹', true)">Tiny Tuscan 🇮🇹</button>
+    <button class="option-btn" onclick="answer(this, 1, 'Wrong. Classy? Sure. Correct? No. 🍕', false)">Pizza Hut (classy enough)</button>
+    <button class="option-btn" onclick="answer(this, 1, 'Absolutely not. Swiggy does not count as a date. 🛵', false)">Does Swiggy delivery count?</button>
+    <div class="progress-dots">
+      <div class="dot done"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 2: Question 2 -->
+<div class="screen" id="screen2">
+  <div class="quiz-card">
+    <div class="question-number">Question 2 of 7</div>
+    <div class="question-text">If Maxi could eat only one thing for the rest of her life, it would be:</div>
+    <button class="option-btn" onclick="answer(this, 2, 'Correct! Rajma Chawal supremacy. 🫘', true)">Rajma Chawal 🫘 (obviously)</button>
+    <button class="option-btn" onclick="answer(this, 2, 'Close, but not quite the champion. 🍝', false)">Pasta 🍝 (close second)</button>
+    <button class="option-btn" onclick="answer(this, 2, 'Sweet answer, but Rajma Chawal still wins. 👨‍🍳', false)">Whatever Punu cooks 👨‍🍳</button>
+    <div class="progress-dots">
+      <div class="dot done"></div><div class="dot done"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 3: Question 3 -->
+<div class="screen" id="screen3">
+  <div class="quiz-card">
+    <div class="question-number">Question 3 of 7</div>
+    <div class="question-text">The #1 complaint in this relationship is: 🤦‍♀️</div>
+    <button class="option-btn" onclick="answer(this, 3, 'Correct-ish. They were never funny. 😂', true)">Punu's jokes that aren't funny</button>
+    <button class="option-btn" onclick="answer(this, 3, 'Also correct. It only gets worse from here.', true)">Punu's jokes that REALLY aren't funny</button>
+    <button class="option-btn" onclick="answer(this, 3, 'Confirmed. Still not funny. Never was.', true)">Actually... his jokes are still not funny</button>
+    <div class="progress-dots">
+      <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 4: Question 4 -->
+<div class="screen" id="screen4">
+  <div class="quiz-card">
+    <div class="question-number">Question 4 of 7</div>
+    <div class="question-text">Officially measured fact: how tiny is Maxi? 📏</div>
+    <button class="option-btn" onclick="answer(this, 4, 'Correct! Pocket-sized and proud of it. 🤏', true)">Pocket-sized, fun-sized, iconic 🤏</button>
+    <button class="option-btn" onclick="answer(this, 4, 'Not even close. She\\'s basically a hobbit. Adorably.', false)">Average human height 🚶‍♀️</button>
+    <button class="option-btn" onclick="answer(this, 4, 'She wishes. Still tiny. 📐', false)">Taller than Punu (lol no)</button>
+    <div class="progress-dots">
+      <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 5: Question 5 -->
+<div class="screen" id="screen5">
+  <div class="quiz-card">
+    <div class="question-number">Question 5 of 7</div>
+    <div class="question-text">Who actually runs this relationship? 👑</div>
+    <button class="option-btn" onclick="answer(this, 5, 'Correct. Everyone already knew this. 👑', true)">Maxi. Full control. No debate.</button>
+    <button class="option-btn" onclick="answer(this, 5, 'Cute try. Denied. She\\'s still in charge.', false)">Punu (he wishes)</button>
+    <button class="option-btn" onclick="answer(this, 5, 'It\\'s a nice thought. It\\'s Maxi.', false)">It's a democracy 🗳️</button>
+    <div class="progress-dots">
+      <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot active"></div><div class="dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 6: Question 6 -->
+<div class="screen" id="screen6">
+  <div class="quiz-card">
+    <div class="question-number">Question 6 of 7</div>
+    <div class="question-text">Maxi gets angry at Punu roughly how often? 😤</div>
+    <button class="option-btn" onclick="answer(this, 6, 'Correct. Daily. And he loves her anyway. 💛', true)">Daily, minimum</button>
+    <button class="option-btn" onclick="answer(this, 6, 'Ha. Funny joke. Try again.', false)">Never, she's always calm</button>
+    <button class="option-btn" onclick="answer(this, 6, 'Close, but it\\'s honestly more frequent.', false)">Only on weekends</button>
+    <div class="progress-dots">
+      <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot active"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 7: Question 7 -->
+<div class="screen" id="screen7">
+  <div class="quiz-card">
+    <div class="question-number">Question 7 of 7</div>
+    <div class="question-text">What is Maxi objectively, scientifically the best at? 👗</div>
+    <button class="option-btn" onclick="answer(this, 7, 'Correct! Best dressed, every single day. 👗✨', true)">Dressing sense — unmatched, always</button>
+    <button class="option-btn" onclick="answer(this, 7, 'She\\'s good, but dress sense still wins gold.', false)">Cooking 👩‍🍳</button>
+    <button class="option-btn" onclick="answer(this, 7, 'Also true, but not the final answer.', false)">Being angry at Punu 😤</button>
+    <div class="progress-dots">
+      <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 8: Final Question -->
+<div class="screen" id="screen8">
+  <div class="big-emoji">🎈</div>
+  <div class="question-text">Knowing everything you know... the bad jokes, the anger, the tiny height, the total control... would you still let Punu celebrate your birthday with you?</div>
+  <div class="final-buttons">
+    <button class="yes-btn" onclick="swipedRight()">YES 🎂</button>
+    <button class="no-btn" id="noBtn" onclick="clickedNo()">No</button>
+  </div>
+</div>
+
+<!-- Glitch overlay for "No" -->
+<div class="glitch-overlay" id="glitchOverlay">
+  <div class="error-icon" id="glitchIcon">🚨</div>
+  <div class="error-code" id="glitchCode">ERROR 404</div>
+  <div class="error-msg" id="glitchMsg">"No" is not a valid response on your own birthday.</div>
+  <div class="error-sub" id="glitchSub">System rebooting...</div>
+</div>
+<div class="glitch-scanlines" id="glitchScanlines"></div>
+
+<!-- Screen 9: Loading -->
+<div class="screen" id="screen9">
+  <div class="bumble-logo pulse">🎂</div>
+  <div class="question-text" style="margin-bottom:2rem;">Processing Birthday Audit Results...</div>
+  <div style="width:100%;">
+    <div class="loading-item">
+      <div class="loading-label">Calculating tolerance for bad jokes...</div>
+      <div class="loading-bar-bg"><div class="loading-bar-fill" id="bar1"></div></div>
+      <div class="loading-result" id="result1">TOLERANCE: SUPERHUMAN 💪</div>
+    </div>
+    <div class="loading-item">
+      <div class="loading-label">Measuring dress sense levels...</div>
+      <div class="loading-bar-bg"><div class="loading-bar-fill" id="bar2"></div></div>
+      <div class="loading-result" id="result2">DRESS SENSE: ICONIC, ALWAYS 👗</div>
+    </div>
+    <div class="loading-item">
+      <div class="loading-label">Auditing control over Punu...</div>
+      <div class="loading-bar-bg"><div class="loading-bar-fill" id="bar3"></div></div>
+      <div class="loading-result" id="result3">CONTROL LEVEL: TOTAL 👑</div>
+    </div>
+    <div class="loading-item">
+      <div class="loading-label">Calculating love despite the anger...</div>
+      <div class="loading-bar-bg"><div class="loading-bar-fill" id="bar4"></div></div>
+      <div class="loading-result" id="result4">LOVE LEVEL: OFF THE CHARTS 💕</div>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 10: Birthday Card -->
+<div class="screen" id="screen10">
+  <div class="valentine-card">
+    <div class="title">Birthday Audit Complete</div>
+    <div class="subtitle">"Small, angry, best-dressed, in full control... and still my favorite person."</div>
+    <div class="the-question">Happy Birthday, Maxi! 🎉</div>
+    <div class="tagline">One more spin around the sun for the tiniest, most stylish tyrant Punu knows.</div>
+    <button class="btn-valentine" onclick="accepted()">OPEN YOUR GIFT 🎁</button>
+  </div>
+</div>
+
+<!-- Screen 11: Celebration -->
+<div class="screen" id="screen11">
+  <div class="celebration">
+    <div class="big-heart">🎂</div>
+    <h1>Happy Birthday, Maxi!</h1>
+    <p>
+      From a random Bumble swipe to 2 years of you being tiny, stylish, occasionally furious at Punu, and always completely in charge —
+      here's to another year of your chaos and his terrible jokes.<br><br>
+      <span class="golden">He still says I love you first. Every time.</span><br>
+      Happy Birthday, my love. 🎈🎁🎂
+    </p>
+    <img class="meme-img" id="memeImg" src="meme.png" alt="A very funny photo of Maxi" onerror="this.classList.remove('show')" onload="this.classList.add('show')">
+    <div class="meme-placeholder" id="memePlaceholder">📸<br></div>
+  </div>
+</div>
+
+<script>
+// ---- Sound Effects (Web Audio API) ----
+class SoundFX {
+  constructor() { this.ctx = null; }
+  init() {
+    if (this.ctx) return;
+    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  _osc(type, freq, duration, vol = 0.15, delay = 0) {
+    if (!this.ctx) return;
+    const o = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    o.type = type;
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(0, this.ctx.currentTime + delay);
+    g.gain.linearRampToValueAtTime(vol, this.ctx.currentTime + delay + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + delay + duration);
+    o.connect(g);
+    g.connect(this.ctx.destination);
+    o.start(this.ctx.currentTime + delay);
+    o.stop(this.ctx.currentTime + delay + duration);
+  }
+  pop() { this._osc('sine', 600, 0.08, 0.12); this._osc('sine', 900, 0.06, 0.06, 0.02); }
+  ding() { this._osc('sine', 880, 0.15, 0.14); this._osc('sine', 1320, 0.12, 0.08, 0.05); }
+  whoosh() {
+    if (!this.ctx) return;
+    const o = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(200, this.ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.15);
+    o.frequency.exponentialRampToValueAtTime(200, this.ctx.currentTime + 0.3);
+    g.gain.setValueAtTime(0.08, this.ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+    o.connect(g); g.connect(this.ctx.destination);
+    o.start(); o.stop(this.ctx.currentTime + 0.3);
+  }
+  blip() { this._osc('square', 520, 0.06, 0.06); this._osc('sine', 780, 0.08, 0.04, 0.02); }
+  glitch() {
+    if (!this.ctx) return;
+    const bufSize = this.ctx.sampleRate * 0.25;
+    const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.6;
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buf;
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.2, this.ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
+    noise.connect(g); g.connect(this.ctx.destination);
+    noise.start(); noise.stop(this.ctx.currentTime + 0.25);
+    this._osc('square', 440, 0.12, 0.12, 0.08);
+    this._osc('square', 330, 0.12, 0.1, 0.2);
+  }
+  beep(pitch = 0) {
+    const freq = 500 + pitch * 120;
+    this._osc('sine', freq, 0.1, 0.1);
+    this._osc('triangle', freq * 1.5, 0.08, 0.04, 0.02);
+  }
+  chime() {
+    const notes = [523, 659, 784, 1047];
+    notes.forEach((f, i) => {
+      this._osc('sine', f, 0.4, 0.1, i * 0.12);
+      this._osc('triangle', f * 2, 0.3, 0.03, i * 0.12);
+    });
+  }
+  celebrate() {
+    const chord = [523, 659, 784, 1047, 1319];
+    chord.forEach((f, i) => {
+      this._osc('sine', f, 0.8, 0.08, i * 0.05);
+      this._osc('triangle', f, 0.6, 0.04, i * 0.05 + 0.1);
+    });
+    for (let i = 0; i < 8; i++) {
+      const f = 1200 + Math.random() * 1800;
+      this._osc('sine', f, 0.15, 0.04, 0.5 + i * 0.15);
+    }
+  }
+}
+const sfx = new SoundFX();
+
+// ---- Ambient sparkles ----
+(function createSparkles() {
+  const bg = document.getElementById('sparkleBg');
+  for (let i = 0; i < 50; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.animationDuration = (2 + Math.random() * 4) + 's';
+    s.style.animationDelay = Math.random() * 4 + 's';
+    bg.appendChild(s);
+  }
+})();
+
+// ---- Screen navigation ----
+let currentScreen = 0;
+function goTo(n) {
+  sfx.init();
+  if (n === 10) sfx.chime(); else sfx.whoosh();
+  document.getElementById('screen' + currentScreen).classList.remove('active');
+  document.getElementById('screen' + n).classList.add('active');
+  currentScreen = n;
+  if (n === 9) startLoading();
+}
+
+// ---- Quiz answers ----
+function answer(btn, questionNum, response, isCorrect) {
+  sfx.ding();
+  btn.classList.add('selected');
+  const siblings = btn.parentElement.querySelectorAll('.option-btn');
+  siblings.forEach(b => { b.style.pointerEvents = 'none'; });
+
+  const toast = document.createElement('div');
+  toast.className = 'response-toast';
+  toast.textContent = response;
+  document.body.appendChild(toast);
+  setTimeout(() => sfx.blip(), 100);
+
+  setTimeout(() => {
+    toast.classList.add('toast-exit');
+    setTimeout(() => {
+      toast.remove();
+      goTo(questionNum + 1);
+    }, 350);
+  }, 2200);
+}
+
+// ---- Glitch "No" mechanic ----
+let noCount = 0;
+const glitchErrors = [
+  { icon: '🚨', code: 'ERROR 404', msg: '"No" is not a valid response on your own birthday.', sub: 'System rebooting...' },
+  { icon: '💀', code: 'SYSTEM CRASH', msg: 'Response "No" has caused an emotional breakdown in Punu\'s servers.', sub: 'Attempting recovery... please try "Yes" instead.' },
+  { icon: '🥺', code: 'CRITICAL WARNING', msg: 'Repeated "No" attempts detected. Cake levels are dropping fast.', sub: 'Recommended action: click Yes immediately.' },
+  { icon: '😤', code: 'FINAL WARNING', msg: 'The system has decided for you. "No" has been permanently removed from the dictionary. It\'s your birthday, you don\'t get a choice.', sub: 'You have 1 option remaining. Choose wisely.' }
+];
+function clickedNo() {
+  if (noCount >= glitchErrors.length) { swipedRight(); return; }
+  const err = glitchErrors[noCount];
+  const overlay = document.getElementById('glitchOverlay');
+  const scanlines = document.getElementById('glitchScanlines');
+  document.getElementById('glitchIcon').textContent = err.icon;
+  document.getElementById('glitchCode').textContent = err.code;
+  document.getElementById('glitchMsg').textContent = err.msg;
+  document.getElementById('glitchSub').textContent = err.sub;
+  overlay.classList.add('active');
+  scanlines.classList.add('active');
+  sfx.glitch();
+  document.body.style.animation = 'none';
+  document.body.offsetHeight;
+  document.body.style.animation = 'shakeBody 0.3s ease';
+  noCount++;
+  setTimeout(() => {
+    overlay.classList.remove('active');
+    scanlines.classList.remove('active');
+    const noBtn = document.getElementById('noBtn');
+    if (noCount === 1) noBtn.textContent = 'No? 😅';
+    if (noCount === 2) noBtn.textContent = 'Still no... 😰';
+    if (noCount === 3) noBtn.textContent = 'Please? 🥺';
+    if (noCount >= 4) {
+      noBtn.textContent = 'Fine, Yes 🎂';
+      noBtn.style.background = 'linear-gradient(135deg, #FFC629, #FF9500)';
+      noBtn.style.color = '#2b1a3e';
+      noBtn.style.fontWeight = '800';
+      noBtn.style.borderColor = '#FFC629';
+    }
+  }, 2500);
+}
+
+// ---- Swipe right ----
+function swipedRight() { sfx.ding(); goTo(9); }
+
+// ---- Loading bars ----
+function startLoading() {
+  const bars = [
+    { bar: 'bar1', result: 'result1', delay: 200 },
+    { bar: 'bar2', result: 'result2', delay: 2000 },
+    { bar: 'bar3', result: 'result3', delay: 3800 },
+    { bar: 'bar4', result: 'result4', delay: 5600 },
+  ];
+  bars.forEach(({ bar, result, delay }, i) => {
+    setTimeout(() => {
+      document.getElementById(bar).style.width = '100%';
+      sfx.beep(i);
+      setTimeout(() => {
+        document.getElementById(result).classList.add('visible');
+        sfx.pop();
+      }, 1400);
+    }, delay);
+  });
+  setTimeout(() => goTo(10), 8200);
+}
+
+// ---- Accepted! ----
+function accepted() { sfx.celebrate(); goTo(11); startCelebration(); }
+
+function startCelebration() {
+  const duration = 6000;
+  const end = Date.now() + duration;
+  (function frame() {
+    confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.6 }, colors: ['#FF6B6B', '#FFC629', '#FF9500', '#ff69b4', '#FFD700'] });
+    confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1, y: 0.6 }, colors: ['#FF6B6B', '#FFC629', '#FF9500', '#ff69b4', '#FFD700'] });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  })();
+  setTimeout(() => {
+    confetti({ particleCount: 120, spread: 100, origin: { x: 0.5, y: 0.4 }, colors: ['#FF6B6B', '#FFC629', '#FF9500', '#ff69b4', '#FFD700'] });
+  }, 500);
+
+  const container = document.getElementById('heartsBg');
+  const hearts = ['🎈', '🎉', '🎂', '🎁', '✨', '💛', '🥳', '💖'];
+  for (let i = 0; i < 35; i++) {
+    const h = document.createElement('div');
+    h.className = 'floating-heart';
+    h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+    h.style.left = Math.random() * 100 + '%';
+    h.style.fontSize = (1.2 + Math.random() * 2) + 'rem';
+    h.style.animationDuration = (6 + Math.random() * 10) + 's';
+    h.style.animationDelay = Math.random() * 4 + 's';
+    container.appendChild(h);
+  }
+
+  // If the meme image fails to load (not added yet), show placeholder instead
+  const img = document.getElementById('memeImg');
+  if (!img.complete || img.naturalWidth === 0) {
+    document.getElementById('memePlaceholder').style.display = 'flex';
+  } else {
+    document.getElementById('memePlaceholder').style.display = 'none';
+  }
+}
+</script>
+
+<style>
+@keyframes shakeBody {
+  0%, 100% { transform: translate(0); }
+  10% { transform: translate(-4px, 2px); }
+  20% { transform: translate(4px, -2px); }
+  30% { transform: translate(-3px, -1px); }
+  40% { transform: translate(3px, 1px); }
+  50% { transform: translate(-2px, 2px); }
+  60% { transform: translate(2px, -1px); }
+  70% { transform: translate(-1px, 1px); }
+}
+</style>
+</body>
+</html>
