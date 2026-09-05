@@ -311,33 +311,36 @@ body {
   30% { transform: scale(1); }
   45% { transform: scale(1.08); }
 }
-.meme-img {
-  width: 230px;
-  max-width: 72%;
-  border-radius: 18px;
-  margin-top: 1.6rem;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-  animation: memeIn 0.6s cubic-bezier(.4,0,.2,1) 0.6s both;
-  display: none;
+/* ---- Photo gallery ---- */
+.photo-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+  margin-top: 1.8rem;
 }
-.meme-img.show { display: inline-block; }
-.meme-placeholder {
-  width: 200px;
-  max-width: 65%;
-  aspect-ratio: 1;
-  border-radius: 18px;
-  margin-top: 1.6rem;
-  background: rgba(255,255,255,0.06);
-  border: 2px dashed rgba(255,214,92,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
-  animation: memeIn 0.6s cubic-bezier(.4,0,.2,1) 0.6s both;
+.photo-gallery img {
+  --rot: 0deg;
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  border: 3px solid rgba(255,255,255,0.9);
+  opacity: 0;
+  transform: rotate(var(--rot));
+  animation: memeIn 0.6s cubic-bezier(.4,0,.2,1) both;
 }
+.photo-gallery img:nth-child(1) { --rot: -3deg; animation-delay: 0.3s; }
+.photo-gallery img:nth-child(2) { --rot: 2deg; animation-delay: 0.45s; }
+.photo-gallery img:nth-child(3) { --rot: 2deg; animation-delay: 0.6s; }
+.photo-gallery img:nth-child(4) { --rot: -2deg; animation-delay: 0.75s; }
+.photo-gallery img:nth-child(5) { --rot: 3deg; animation-delay: 0.9s; }
+.photo-gallery img:nth-child(6) { --rot: -3deg; animation-delay: 1.05s; }
+.photo-gallery img:nth-child(7) { --rot: 1deg; animation-delay: 1.2s; grid-column: span 2; aspect-ratio: 16/9; }
 @keyframes memeIn {
-  from { opacity: 0; transform: scale(0.8) rotate(-3deg); }
-  to { opacity: 1; transform: scale(1) rotate(0deg); }
+  from { opacity: 0; transform: scale(0.8) rotate(var(--rot)) translateY(10px); }
+  to { opacity: 1; transform: scale(1) rotate(var(--rot)) translateY(0); }
 }
 </style>
 </head>
@@ -386,14 +389,22 @@ body {
 <div class="screen" id="screen3">
   <div class="celebration">
     <div class="big-emoji-top">🥳</div>
-    <h1>Happiest Birthday, Maxi!</h1>
+    <h1>Happy Birthday, Baby!</h1>
     <p>
-      Here's to you — the tiniest storm, the best-dressed troublemaker,<br>
-      the one who runs the show and somehow still makes everything better.<br><br>
-      Wishing you a year as wonderful, chaotic, and loved as you are. 💛
+      For the person that you are — I wish the world for you.<br>
+      I want to see this world with you.<br><br>
+      Have a great day and the bestest life ahead.<br>
+      I love you. 💛
     </p>
-    <img class="meme-img" id="memeImg" src="meme.png" alt="A very funny photo of Maxi" onerror="this.classList.remove('show')" onload="this.classList.add('show')">
-    <div class="meme-placeholder" id="memePlaceholder">📸</div>
+    <div class="photo-gallery" id="photoGallery">
+      <img src="photos/maxi1.jpg" alt="Maxi">
+      <img src="photos/maxi2.jpg" alt="Maxi">
+      <img src="photos/maxi3.jpg" alt="Maxi">
+      <img src="photos/maxi4.jpg" alt="Maxi">
+      <img src="photos/maxi5.jpg" alt="Maxi">
+      <img src="photos/maxi6.jpg" alt="Maxi">
+      <img src="photos/maxi7.jpg" alt="Maxi">
+    </div>
   </div>
 </div>
 
@@ -488,12 +499,12 @@ function goTo(n) {
 
 // ---- Gifts ----
 const giftMessages = [
-  { icon: '👗', text: "Your dress sense is unmatched. Every single day, somehow better than the last." },
-  { icon: '🤏', text: "Officially the tiniest, most iconic person I know. Fun-sized and fabulous." },
-  { icon: '👑', text: "Let's be honest — you run this whole show. And it's better that way." },
-  { icon: '😤', text: "You get mad at me more than anyone else on earth... and I still wouldn't trade it." },
-  { icon: '💛', text: "You make ordinary days feel like something worth remembering." },
-  { icon: '🎉', text: "Here's to another year of you being exactly, wonderfully yourself." }
+  { icon: '👗', text: "For your amazing dress sense and styling — I've learnt so much from you, and I'll keep learning from you for this lifetime." },
+  { icon: '🤏', text: "Tiniest one... and that's exactly fine." },
+  { icon: '😊', text: "Your smile makes my heart smile. So keep smiling." },
+  { icon: '😤', text: "You get mad at me more than anyone... and I would not trade it for anything else, ever." },
+  { icon: '🌟', text: "You make me want to be a better person, every single day, just by being you." },
+  { icon: '🐐', text: "Here's to another year of you being the bestest one and the GOAT." }
 ];
 let giftsOpened = 0;
 function buildGifts() {
@@ -581,15 +592,6 @@ function startCelebration() {
   setTimeout(() => {
     confetti({ particleCount: 140, spread: 110, origin: { x: 0.5, y: 0.4 }, colors: ['#FFD65C', '#FF8FB1', '#FF6B9D', '#7C6BFF', '#FFFFFF'] });
   }, 400);
-
-  const img = document.getElementById('memeImg');
-  setTimeout(() => {
-    if (!img.complete || img.naturalWidth === 0) {
-      document.getElementById('memePlaceholder').style.display = 'flex';
-    } else {
-      document.getElementById('memePlaceholder').style.display = 'none';
-    }
-  }, 100);
 }
 </script>
 </body>
